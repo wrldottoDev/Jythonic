@@ -1,3 +1,5 @@
+package pythonlike;
+
 public class IndexedValue<T> {
 
     public int index;

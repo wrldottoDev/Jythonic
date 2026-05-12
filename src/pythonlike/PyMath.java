@@ -1,3 +1,5 @@
+package pythonlike;
+
 public class PyMath {
 
     public static <T extends Comparable<T>> T max(PyList<T> lista) {

@@ -1,3 +1,5 @@
+package pythonlike;
+
 import java.util.HashMap;
 
 public class PyDict<K, V> extends HashMap<K, V> {

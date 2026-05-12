@@ -1,3 +1,5 @@
+package pythonlike;
+
 public class PyString {
 
     private String value;

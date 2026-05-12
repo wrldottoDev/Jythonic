@@ -12,21 +12,50 @@ The goal is not to replace Java. The goal is to practice:
 - collections
 - API design
 
-All classes currently live in the default Java package, so examples use `Py.print(...)`, `Py.list(...)`, etc. If the project later moves to a named package, static imports can be added.
+The library now lives in the `pythonlike` package. That means future programs can import it and use Python-like helpers such as `print(...)`, `list(...)`, `len(...)`, and `pystr(...)`.
 
 ---
 
 ## Compile And Run
 
+Compile the library and the example:
+
 ```bash
-javac *.java
-java Main
+javac -d out src/pythonlike/*.java examples/Main.java
+java -cp out Main
 ```
 
 Recommended while developing:
 
 ```bash
-javac -Xlint:all *.java
+javac -Xlint:all -d out src/pythonlike/*.java examples/Main.java
+```
+
+Create a reusable JAR:
+
+```bash
+javac -d out src/pythonlike/*.java
+jar cf python-like.jar -C out .
+```
+
+Use the JAR from another project:
+
+```bash
+javac -cp python-like.jar Main.java
+java -cp .:python-like.jar Main
+```
+
+On Windows, use `;` instead of `:`:
+
+```bash
+java -cp .;python-like.jar Main
+```
+
+Every program that uses the library should import it like this:
+
+```java
+import pythonlike.*;
+import static pythonlike.Py.*;
 ```
 
 ---
@@ -50,9 +79,9 @@ javac -Xlint:all *.java
 Prints any value using `System.out.println`.
 
 ```java
-Py.print("Hello");
-Py.print(123);
-Py.print(Py.list("Ana", "Luis"));
+print("Hello");
+print(123);
+print(list("Ana", "Luis"));
 ```
 
 ### input()
@@ -60,9 +89,9 @@ Py.print(Py.list("Ana", "Luis"));
 Reads a line from the console.
 
 ```java
-String name = Py.input("Name: ");
-int age = Py.input("Age: ", Integer.class);
-double height = Py.input("Height: ", Double.class);
+String name = input("Name: ");
+int age = input("Age: ", Integer.class);
+double height = input("Height: ", Double.class);
 ```
 
 Supported typed input includes `byte`, `short`, `int`, `long`, `float`, `double`, `boolean`, `char`, and `String`.
@@ -72,8 +101,8 @@ Supported typed input includes `byte`, `short`, `int`, `long`, `float`, `double`
 Returns the length or size of strings, arrays, collections, maps, and `PyList`.
 
 ```java
-Py.print(Py.len("hello"));
-Py.print(Py.len(Py.list(1, 2, 3)));
+print(len("hello"));
+print(len(list(1, 2, 3)));
 ```
 
 ### type()
@@ -81,10 +110,10 @@ Py.print(Py.len(Py.list(1, 2, 3)));
 Returns a Python-style type name.
 
 ```java
-Py.print(Py.type(10));          // <class 'int'>
-Py.print(Py.type("hello"));     // <class 'str'>
-Py.print(Py.type(true));        // <class 'bool'>
-Py.print(Py.type(Py.list(1)));  // <class 'list'>
+print(type(10));          // <class 'int'>
+print(type("hello"));     // <class 'str'>
+print(type(true));        // <class 'bool'>
+print(type(list(1)));  // <class 'list'>
 ```
 
 ### range()
@@ -92,12 +121,12 @@ Py.print(Py.type(Py.list(1)));  // <class 'list'>
 Creates an `int[]` that can be used in a `for-each` loop.
 
 ```java
-for (int i : Py.range(5)) {
-    Py.print(i);
+for (int i : range(5)) {
+    print(i);
 }
 
-for (int i : Py.range(2, 10, 2)) {
-    Py.print(i);
+for (int i : range(2, 10, 2)) {
+    print(i);
 }
 ```
 
@@ -106,8 +135,8 @@ for (int i : Py.range(2, 10, 2)) {
 Creates a `PyList` quickly.
 
 ```java
-PyList<Integer> nums = Py.list(10, 20, 30);
-PyList<String> names = Py.list("Ana", "Luis");
+PyList<Integer> nums = list(10, 20, 30);
+PyList<String> names = list("Ana", "Luis");
 ```
 
 ### join()
@@ -115,8 +144,8 @@ PyList<String> names = Py.list("Ana", "Luis");
 Joins a `PyList` into a `String`.
 
 ```java
-PyList<String> names = Py.list("Ana", "Luis", "Marta");
-Py.print(Py.join(", ", names)); // Ana, Luis, Marta
+PyList<String> names = list("Ana", "Luis", "Marta");
+print(join(", ", names)); // Ana, Luis, Marta
 ```
 
 ### split()
@@ -124,8 +153,8 @@ Py.print(Py.join(", ", names)); // Ana, Luis, Marta
 Splits a normal Java `String` and returns `PyList<String>`.
 
 ```java
-PyList<String> parts = Py.split("Ana,Luis,Marta", ",");
-Py.print(parts);
+PyList<String> parts = split("Ana,Luis,Marta", ",");
+print(parts);
 ```
 
 ### pystr()
@@ -133,19 +162,19 @@ Py.print(parts);
 Wraps a Java `String` inside `PyString`.
 
 ```java
-PyString texto = Py.pystr(" hola mundo ");
-Py.print(texto.upper());
+PyString texto = pystr(" hola mundo ");
+print(texto.upper());
 ```
 
-`Py.str(String texto)` also exists and returns a `PyString`.
+`str(String texto)` also exists and returns a `PyString`.
 
 ### any()
 
 Returns `true` if at least one value in a `PyList<Boolean>` is `true`.
 
 ```java
-PyList<Boolean> values = Py.list(false, false, true);
-Py.print(Py.any(values)); // true
+PyList<Boolean> values = list(false, false, true);
+print(any(values)); // true
 ```
 
 ### all()
@@ -153,8 +182,8 @@ Py.print(Py.any(values)); // true
 Returns `true` only if every value in a `PyList<Boolean>` is `true`.
 
 ```java
-PyList<Boolean> values = Py.list(true, true, false);
-Py.print(Py.all(values)); // false
+PyList<Boolean> values = list(true, true, false);
+print(all(values)); // false
 ```
 
 ### zip()
@@ -162,11 +191,11 @@ Py.print(Py.all(values)); // false
 Combines two lists into a list of pairs. Like Python, it stops at the shortest list.
 
 ```java
-PyList<String> names = Py.list("Ana", "Luis", "Marta");
-PyList<Integer> ages = Py.list(20, 30);
+PyList<String> names = list("Ana", "Luis", "Marta");
+PyList<Integer> ages = list(20, 30);
 
-PyList<Pair<String, Integer>> zipped = Py.zip(names, ages);
-Py.print(zipped); // [(Ana, 20), (Luis, 30)]
+PyList<Pair<String, Integer>> zipped = zip(names, ages);
+print(zipped); // [(Ana, 20), (Luis, 30)]
 ```
 
 ### flatten()
@@ -174,12 +203,12 @@ Py.print(zipped); // [(Ana, 20), (Luis, 30)]
 Flattens nested `PyList` objects into one `PyList<Object>`.
 
 ```java
-PyList<Object> nested = Py.list(
-    Py.list(1, 2),
-    Py.list(3, Py.list(4, 5))
+PyList<Object> nested = list(
+    list(1, 2),
+    list(3, list(4, 5))
 );
 
-Py.print(Py.flatten(nested)); // [1, 2, 3, 4, 5]
+print(flatten(nested)); // [1, 2, 3, 4, 5]
 ```
 
 ### clear()
@@ -187,7 +216,7 @@ Py.print(Py.flatten(nested)); // [1, 2, 3, 4, 5]
 Prints terminal escape codes that clear many terminals.
 
 ```java
-Py.clear();
+clear();
 ```
 
 ---
@@ -203,7 +232,7 @@ nums.append(10);
 nums.append(20);
 nums.append(30);
 
-Py.print(nums); // [10, 20, 30]
+print(nums); // [10, 20, 30]
 ```
 
 ### append()
@@ -227,7 +256,7 @@ Integer last = nums.pop();
 Returns the list size.
 
 ```java
-Py.print(nums.len());
+print(nums.len());
 ```
 
 ### pyGet()
@@ -235,8 +264,8 @@ Py.print(nums.len());
 Gets an element by index. Supports negative indexes.
 
 ```java
-Py.print(nums.pyGet(0));
-Py.print(nums.pyGet(-1));
+print(nums.pyGet(0));
+print(nums.pyGet(-1));
 ```
 
 ### slice()
@@ -244,10 +273,10 @@ Py.print(nums.pyGet(-1));
 Returns a new `PyList` with a section of the list.
 
 ```java
-PyList<Integer> nums = Py.list(10, 20, 30, 40, 50);
+PyList<Integer> nums = list(10, 20, 30, 40, 50);
 
-Py.print(nums.slice(1, 4)); // [20, 30, 40]
-Py.print(nums.slice(3));    // [10, 20, 30]
+print(nums.slice(1, 4)); // [20, 30, 40]
+print(nums.slice(3));    // [10, 20, 30]
 ```
 
 ### has()
@@ -255,7 +284,7 @@ Py.print(nums.slice(3));    // [10, 20, 30]
 Checks if a value is inside the list.
 
 ```java
-Py.print(nums.has(30)); // true
+print(nums.has(30)); // true
 ```
 
 ### reverse()
@@ -264,7 +293,7 @@ Reverses the current list in place.
 
 ```java
 nums.reverse();
-Py.print(nums);
+print(nums);
 ```
 
 ### sort()
@@ -272,9 +301,9 @@ Py.print(nums);
 Sorts the current list in place. Values must implement `Comparable`, such as `Integer`, `Double`, or `String`.
 
 ```java
-PyList<Integer> nums = Py.list(30, 10, 20);
+PyList<Integer> nums = list(30, 10, 20);
 nums.sort();
-Py.print(nums); // [10, 20, 30]
+print(nums); // [10, 20, 30]
 ```
 
 ### enumerate()
@@ -282,11 +311,11 @@ Py.print(nums); // [10, 20, 30]
 Returns a list of `IndexedValue<T>` objects.
 
 ```java
-PyList<String> names = Py.list("Ana", "Luis");
+PyList<String> names = list("Ana", "Luis");
 PyList<IndexedValue<String>> indexed = PyList.enumerate(names);
 
 for (IndexedValue<String> item : indexed) {
-    Py.print(item.index + ": " + item.value);
+    print(item.index + ": " + item.value);
 }
 ```
 
@@ -295,10 +324,10 @@ for (IndexedValue<String> item : indexed) {
 Transforms each element and returns a new list.
 
 ```java
-PyList<Integer> nums = Py.list(1, 2, 3);
+PyList<Integer> nums = list(1, 2, 3);
 PyList<Integer> doubled = nums.map(n -> n * 2);
 
-Py.print(doubled); // [2, 4, 6]
+print(doubled); // [2, 4, 6]
 ```
 
 ### filter()
@@ -306,10 +335,10 @@ Py.print(doubled); // [2, 4, 6]
 Keeps only elements that pass a condition.
 
 ```java
-PyList<Integer> nums = Py.list(1, 2, 3, 4);
+PyList<Integer> nums = list(1, 2, 3, 4);
 PyList<Integer> evens = nums.filter(n -> n % 2 == 0);
 
-Py.print(evens); // [2, 4]
+print(evens); // [2, 4]
 ```
 
 ### choice()
@@ -317,8 +346,8 @@ Py.print(evens); // [2, 4]
 Returns one random element from the list.
 
 ```java
-PyList<String> names = Py.list("Ana", "Luis", "Marta");
-Py.print(names.choice());
+PyList<String> names = list("Ana", "Luis", "Marta");
+print(names.choice());
 ```
 
 ### shuffle()
@@ -327,7 +356,7 @@ Randomly reorders the current list in place.
 
 ```java
 names.shuffle();
-Py.print(names);
+print(names);
 ```
 
 ---
@@ -337,12 +366,12 @@ Py.print(names);
 `PyString` wraps a private Java `String`. Its transformation methods return new `PyString` objects, which makes it feel immutable like Python strings.
 
 ```java
-PyString texto = Py.pystr(" hola mundo ");
+PyString texto = pystr(" hola mundo ");
 
-Py.print(texto.upper());
-Py.print(texto.strip());
-Py.print(texto.replace("hola", "adios"));
-Py.print(texto.split());
+print(texto.upper());
+print(texto.strip());
+print(texto.replace("hola", "adios"));
+print(texto.split());
 ```
 
 ### upper()
@@ -350,7 +379,7 @@ Py.print(texto.split());
 Returns a new uppercase `PyString`.
 
 ```java
-Py.print(Py.pystr("hola").upper()); // HOLA
+print(pystr("hola").upper()); // HOLA
 ```
 
 ### lower()
@@ -358,7 +387,7 @@ Py.print(Py.pystr("hola").upper()); // HOLA
 Returns a new lowercase `PyString`.
 
 ```java
-Py.print(Py.pystr("HOLA").lower()); // hola
+print(pystr("HOLA").lower()); // hola
 ```
 
 ### split()
@@ -366,13 +395,13 @@ Py.print(Py.pystr("HOLA").lower()); // hola
 Without arguments, splits by spaces and returns `PyList<String>`.
 
 ```java
-Py.print(Py.pystr("hola mundo").split()); // [hola, mundo]
+print(pystr("hola mundo").split()); // [hola, mundo]
 ```
 
 With a separator, splits using that separator.
 
 ```java
-Py.print(Py.pystr("Ana,Luis").split(",")); // [Ana, Luis]
+print(pystr("Ana,Luis").split(",")); // [Ana, Luis]
 ```
 
 ### replace()
@@ -380,7 +409,7 @@ Py.print(Py.pystr("Ana,Luis").split(",")); // [Ana, Luis]
 Returns a new `PyString` with text replaced.
 
 ```java
-Py.print(Py.pystr("hola mundo").replace("hola", "adios"));
+print(pystr("hola mundo").replace("hola", "adios"));
 ```
 
 ### startswith()
@@ -388,7 +417,7 @@ Py.print(Py.pystr("hola mundo").replace("hola", "adios"));
 Checks whether the text starts with a prefix.
 
 ```java
-Py.print(Py.pystr("hola").startswith("ho")); // true
+print(pystr("hola").startswith("ho")); // true
 ```
 
 ### endswith()
@@ -396,7 +425,7 @@ Py.print(Py.pystr("hola").startswith("ho")); // true
 Checks whether the text ends with a suffix.
 
 ```java
-Py.print(Py.pystr("hola").endswith("la")); // true
+print(pystr("hola").endswith("la")); // true
 ```
 
 ### strip()
@@ -404,7 +433,7 @@ Py.print(Py.pystr("hola").endswith("la")); // true
 Returns a new `PyString` without whitespace at the beginning and end.
 
 ```java
-Py.print(Py.pystr(" hola ").strip()); // hola
+print(pystr(" hola ").strip()); // hola
 ```
 
 ---
@@ -418,8 +447,8 @@ Py.print(Py.pystr(" hola ").strip()); // hola
 Returns the largest value in a `PyList<T>`. Values must implement `Comparable`.
 
 ```java
-PyList<Integer> nums = Py.list(10, 30, 20);
-Py.print(PyMath.max(nums)); // 30
+PyList<Integer> nums = list(10, 30, 20);
+print(PyMath.max(nums)); // 30
 ```
 
 ### min()
@@ -427,7 +456,7 @@ Py.print(PyMath.max(nums)); // 30
 Returns the smallest value in a `PyList<T>`. Values must implement `Comparable`.
 
 ```java
-Py.print(PyMath.min(nums)); // 10
+print(PyMath.min(nums)); // 10
 ```
 
 ### abs()
@@ -435,7 +464,7 @@ Py.print(PyMath.min(nums)); // 10
 Returns the absolute value of an integer using `Math.abs`.
 
 ```java
-Py.print(PyMath.abs(-10)); // 10
+print(PyMath.abs(-10)); // 10
 ```
 
 ### sqrt()
@@ -443,7 +472,7 @@ Py.print(PyMath.abs(-10)); // 10
 Returns the square root using `Math.sqrt`.
 
 ```java
-Py.print(PyMath.sqrt(16)); // 4.0
+print(PyMath.sqrt(16)); // 4.0
 ```
 
 ### pow()
@@ -451,7 +480,7 @@ Py.print(PyMath.sqrt(16)); // 4.0
 Raises a number to a power using `Math.pow`.
 
 ```java
-Py.print(PyMath.pow(2, 3)); // 8.0
+print(PyMath.pow(2, 3)); // 8.0
 ```
 
 ### sum()
@@ -459,7 +488,7 @@ Py.print(PyMath.pow(2, 3)); // 8.0
 Returns the total sum of a `PyList<Integer>`.
 
 ```java
-Py.print(PyMath.sum(Py.list(1, 2, 3))); // 6
+print(PyMath.sum(list(1, 2, 3))); // 6
 ```
 
 ---
@@ -474,8 +503,8 @@ PyDict<String, Integer> ages = new PyDict<>();
 ages.set("Ana", 20);
 ages.set("Luis", 30);
 
-Py.print(ages.get("Ana"));
-Py.print(ages.has("Luis"));
+print(ages.get("Ana"));
+print(ages.has("Luis"));
 ```
 
 ### set()
@@ -491,21 +520,21 @@ ages.set("Marta", 25);
 Checks if a key exists.
 
 ```java
-Py.print(ages.has("Ana")); // true
+print(ages.has("Ana")); // true
 ```
 
 ---
 
 ## Pair
 
-`Pair<A, B>` stores two values and is used by `Py.zip()`.
+`Pair<A, B>` stores two values and is used by `zip()`.
 
 ```java
 Pair<String, Integer> pair = new Pair<>("Ana", 20);
 
-Py.print(pair.first);
-Py.print(pair.second);
-Py.print(pair); // (Ana, 20)
+print(pair.first);
+print(pair.second);
+print(pair); // (Ana, 20)
 ```
 
 ---
@@ -513,35 +542,38 @@ Py.print(pair); // (Ana, 20)
 ## Complete Example
 
 ```java
+import pythonlike.*;
+import static pythonlike.Py.*;
+
 public class Main {
 
     public static void main(String[] args) {
 
-        PyString texto = Py.pystr(" hola mundo ");
+        PyString texto = pystr(" hola mundo ");
 
-        Py.print(texto.upper());
-        Py.print(texto.strip());
-        Py.print(texto.replace("hola", "adios"));
-        Py.print(texto.split());
+        print(texto.upper());
+        print(texto.strip());
+        print(texto.replace("hola", "adios"));
+        print(texto.split());
 
-        PyList<Integer> nums = Py.list(10, 5, 30, 20);
+        PyList<Integer> nums = list(10, 5, 30, 20);
 
         nums.sort();
-        Py.print(nums);
+        print(nums);
 
-        Py.print(PyMath.max(nums));
-        Py.print(PyMath.min(nums));
-        Py.print(PyMath.sum(nums));
+        print(PyMath.max(nums));
+        print(PyMath.min(nums));
+        print(PyMath.sum(nums));
 
-        PyList<String> names = Py.list("Ana", "Luis", "Marta");
-        Py.print(Py.zip(names, nums));
+        PyList<String> names = list("Ana", "Luis", "Marta");
+        print(zip(names, nums));
 
-        PyList<Object> nested = Py.list(
-            Py.list(1, 2),
-            Py.list(3, Py.list(4, 5))
+        PyList<Object> nested = list(
+            list(1, 2),
+            list(3, list(4, 5))
         );
 
-        Py.print(Py.flatten(nested));
+        print(flatten(nested));
     }
 }
 ```
@@ -554,7 +586,7 @@ public class Main {
 - Some methods modify the current object, such as `PyList.reverse()`, `PyList.sort()`, and `PyList.shuffle()`.
 - `PyString` methods like `upper()`, `lower()`, `replace()`, and `strip()` return new objects.
 - `sort()`, `PyMath.max()`, and `PyMath.min()` need comparable values.
-- The project currently uses the default package. For a larger project, move the classes into a named package.
+- The project uses the `pythonlike` package, so static imports can make calls look like Python: `print(...)`, `list(...)`, `len(...)`.
 
 ---
 
