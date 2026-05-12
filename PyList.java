@@ -47,5 +47,9 @@ public class PyList<T> extends ArrayList<T> {
 
         return this.get(indice);
     }
+
+    public boolean has(T valor) {
+        return this.contains(valor);
+    }
     
 }
