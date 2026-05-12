@@ -1,10 +1,14 @@
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class PyList<T> extends ArrayList<T> {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Random RANDOM = new Random();
 
     public void append(T valor) {
         this.add(valor);
@@ -153,6 +157,23 @@ public class PyList<T> extends ArrayList<T> {
         }
 
         return nuevaLista;
+    }
+
+    public T choice() {
+
+        if (this.len() == 0) {
+            throw new IllegalArgumentException("choice() no puede usar una lista vacia");
+        }
+
+        // Elegimos un indice aleatorio valido para esta lista.
+        int indiceAleatorio = RANDOM.nextInt(this.len());
+
+        return this.get(indiceAleatorio);
+    }
+
+    public void shuffle() {
+        // Collections.shuffle mezcla la lista actual en el mismo objeto.
+        Collections.shuffle(this);
     }
     
 }

@@ -1,27 +1,46 @@
 public class PyString {
 
-    private String valor;
+    private String value;
 
-    public PyString(String valor) {
-        this.valor = valor;
+    public PyString(String value) {
+        this.value = value;
     }
 
     public PyString upper() {
+        // Igual que Python, no cambiamos el texto original: devolvemos uno nuevo.
         return new PyString(
-            valor.toUpperCase()
+            value.toUpperCase()
         );
     }
 
     public PyString lower() {
+        // Igual que Python, no cambiamos el texto original: devolvemos uno nuevo.
         return new PyString(
-            valor.toLowerCase()
+            value.toLowerCase()
         );
+    }
+
+    public PyList<String> split() {
+        PyList<String> lista = new PyList<>();
+        String textoLimpio = value.strip();
+
+        if (textoLimpio.isEmpty()) {
+            return lista;
+        }
+
+        String[] partes = textoLimpio.split("\\s+");
+
+        for (String parte : partes) {
+            lista.append(parte);
+        }
+
+        return lista;
     }
 
     public PyList<String> split(String separador) {
         PyList<String> lista = new PyList<>();
 
-        String[] partes = valor.split(separador);
+        String[] partes = value.split(separador);
 
         for (String parte : partes) {
             lista.append(parte);
@@ -34,28 +53,30 @@ public class PyString {
         String viejo,
         String nuevo
     ) {
+        // replace() crea un nuevo PyString con el texto reemplazado.
         return new PyString(
-            valor.replace(viejo, nuevo)
+            value.replace(viejo, nuevo)
         );
     }
 
     public boolean startswith(String texto) {
-        return valor.startsWith(texto);
+        return value.startsWith(texto);
     }
 
     public boolean endswith(String texto) {
-        return valor.endsWith(texto);
+        return value.endsWith(texto);
     }
 
     public PyString strip() {
+        // Como Python, strip() quita espacios solo al inicio y al final.
         return new PyString(
-            valor.replaceAll("\\s+", "")
+            value.strip()
         );
     }
 
     @Override
     public String toString() {
-        return valor;
+        return value;
     }
 
 }

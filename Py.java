@@ -253,4 +253,67 @@ public class Py {
     public static PyString str(String texto) {
         return new PyString(texto);
     }
+
+    public static PyString pystr(String texto) {
+        return new PyString(texto);
+    }
+
+    public static boolean any(PyList<Boolean> lista) {
+
+        // any() devuelve true si al menos un valor de la lista es true.
+        for (Boolean valor : lista) {
+            if (valor) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean all(PyList<Boolean> lista) {
+
+        // all() devuelve true solo si todos los valores son true.
+        for (Boolean valor : lista) {
+            if (!valor) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static <A, B> PyList<Pair<A, B>> zip(PyList<A> primera, PyList<B> segunda) {
+        PyList<Pair<A, B>> resultado = new PyList<>();
+
+        // Python zip() se detiene cuando termina la lista mas corta.
+        int limite = Math.min(primera.len(), segunda.len());
+
+        for (int i = 0; i < limite; i++) {
+            resultado.append(
+                new Pair<>(primera.get(i), segunda.get(i))
+            );
+        }
+
+        return resultado;
+    }
+
+    public static PyList<Object> flatten(PyList<?> lista) {
+        PyList<Object> resultado = new PyList<>();
+
+        for (Object valor : lista) {
+
+            // Si encontramos otra PyList, la aplanamos tambien.
+            if (valor instanceof PyList<?>) {
+                PyList<Object> subLista = flatten((PyList<?>) valor);
+
+                for (Object subValor : subLista) {
+                    resultado.append(subValor);
+                }
+            } else {
+                resultado.append(valor);
+            }
+        }
+
+        return resultado;
+    }
 }
