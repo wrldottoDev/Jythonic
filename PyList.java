@@ -1,6 +1,10 @@
 import java.util.ArrayList;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class PyList<T> extends ArrayList<T> {
+
+    private static final long serialVersionUID = 1L;
 
     public void append(T valor) {
         this.add(valor);
@@ -12,6 +16,10 @@ public class PyList<T> extends ArrayList<T> {
         this.remove(this.size() - 1);
 
         return valor;
+    }
+
+    public int len() {
+        return this.size();
     }
 
     public PyList<T> slice(int inicio, int fin) {
@@ -50,6 +58,101 @@ public class PyList<T> extends ArrayList<T> {
 
     public boolean has(T valor) {
         return this.contains(valor);
+    }
+
+    public void reverse() {
+
+        int inicio = 0;
+
+        int fin = this.size() - 1;
+
+        while (inicio < fin) {
+
+            T temporal = this.get(inicio);
+
+            this.set(inicio, this.get(fin));
+
+            this.set(fin, temporal);
+
+            inicio++;
+
+            fin--;
+        }
+    }
+
+    public void sort() {
+
+        for (int i = 0; i < this.size() - 1; i++) {
+
+            for (int j = 0; j < this.size() - 1 - i; j++) {
+
+                T actual = this.get(j);
+
+                T siguiente = this.get(j + 1);
+
+                if (compare(actual, siguiente) > 0) {
+
+                    T temporal = this.get(j);
+
+                    this.set(j, this.get(j + 1));
+
+                    this.set(j + 1, temporal);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private int compare(T actual, T siguiente) {
+
+        if (!(actual instanceof Comparable<?>)) {
+            throw new IllegalArgumentException("Los valores no se pueden ordenar");
+        }
+
+        return ((Comparable<T>) actual).compareTo(siguiente);
+    }
+
+    public static <T> PyList<IndexedValue<T>> enumerate(PyList<T> lista) {
+
+        PyList<IndexedValue<T>> resultado = new PyList<>();
+
+        for (int i = 0; i < lista.len(); i++) {
+
+            resultado.append(
+
+                new IndexedValue<>(i, lista.get(i))
+
+            );
+
+        }
+
+        return resultado;
+
+    }
+
+    public <R> PyList<R> map(Function<T, R> funcion) {
+        PyList<R> nuevaLista = new PyList<>();
+
+        for (T valor: this) {
+            nuevaLista.append(
+                funcion.apply(valor)
+            );
+        }
+        return nuevaLista;
+    }
+
+    public PyList<T> filter(Predicate<T> condicion) {
+
+        PyList<T> nuevaLista = new PyList<>();
+
+        for (T valor : this) {
+
+            if (condicion.test(valor)) {
+                nuevaLista.append(valor);
+            }
+        }
+
+        return nuevaLista;
     }
     
 }

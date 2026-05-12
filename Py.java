@@ -211,7 +211,46 @@ public class Py {
         System.out.print("\033[H\033[2J");
     }
 
+    public static <T> String join(String separador, PyList<T> lista) {
+        String resultado = "";
+
+        for (int i = 0; i < lista.len(); i++) {
+            resultado += lista.get(i);
+
+            if (i != lista.len() - 1) {
+                resultado += separador;
+            }
+        }
+        return resultado;
+    }
+
+    public static PyList<String> split(String texto, String separador) {
+        PyList<String> lista = new PyList<>();
+        String[] partes = texto.split(separador);
+
+        for (String parte: partes) {
+            lista.append(parte);
+        }
+        return lista;
+    }
+
     public static void main(String[] args) {
-        
+        PyList<String> nombres = split("Otto, Juan, Pedro", ",");
+
+        print(nombres.pyGet(1));
+    }
+
+    @SafeVarargs
+    public static <T> PyList<T> list(T... elementos) {
+        PyList<T> lista = new PyList<>();
+
+        for (T elemento : elementos) {
+            lista.append(elemento);
+        }
+        return lista;
+    }
+
+    public static PyString str(String texto) {
+        return new PyString(texto);
     }
 }
